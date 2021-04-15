@@ -6,6 +6,9 @@ export default class Fleet {
     constructor() {
         this.shipIndex = 0;
         this.harboredShips = Ships.slice();
+        this.fleetHealth = this.harboredShips.reduce(function(acc, current) {
+            return acc + current.images.length;
+        },0);
         this.currentShip = this.harboredShips.pop();
         this.squares = [];
         for (let i = 0; i < 100; i++) {
@@ -18,12 +21,24 @@ export default class Fleet {
         this.isPlacingHorizontally = !this.isPlacingHorizontally;
     }
 
-    attackSquare = (index) => {
-        this.squares[index].wasAttacked = true;
-        return this.squares[index].isAnchored;
+    isAlive = () => {
+        return this.fleetHealth > 0;
     }
 
-    wasAlreadyAttackedAt = (index) => {
+    attackSquare = (index) => {
+        if (this.isValidLocation(index)) {
+            this.squares[index].wasAttacked = true;
+            let isHit = this.squares[index].isAnchored;
+            if(isHit) this.fleetHealth--;
+            return isHit;
+        }
+    }
+
+    isValidLocation = (index) => {
+        return index >= 0 && index < 100
+    }
+
+    wasAttackedAt = (index) => {
         return this.squares[index].wasAttacked;
     }
 
@@ -63,7 +78,7 @@ export default class Fleet {
     }
 
     isValidPlacement = (index) => {
-        if(!this.currentShip) return false;
+        if (!this.currentShip) return false;
         const length = this.currentShip.images.length;
         if (this.isPlacingHorizontally) {
             if (length + (index % 10) < 11) {
@@ -94,7 +109,7 @@ export default class Fleet {
             } else {
                 this.placeShipVertically(index, isAnchored);
             }
-            if (isAnchored) {this.nextShip();}
+            if (isAnchored) { this.nextShip(); }
             return true;
         }
         return false;

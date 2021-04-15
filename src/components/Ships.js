@@ -23,13 +23,11 @@ import patrolBoat2 from '../assets/patrol_boat2.png';
 
 
  const Ships = [
-
     {images:[carrier1, carrier2, carrier3, carrier4, carrier5]},
     {images:[battleship1, battleship2, battleship3, battleship4]},
     {images:[destroyer1, destroyer2, destroyer3]},
     {images:[submarine1, submarine2, submarine3]},
-    {images:[patrolBoat1, patrolBoat2,]},
-
+    {images:[patrolBoat1, patrolBoat2]}
 ]
 
-export default Ships
+export default Ships;

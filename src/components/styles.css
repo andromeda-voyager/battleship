@@ -5,6 +5,43 @@
     position:relative;
 }
 
+.game-end-message-wrapper {
+    padding-top:1vh;
+    padding-bottom: 1vh;
+}
+
+.game-end-message {
+    font-size: 4vmin;
+}
+
+.instructions {
+    margin-top: 1vh;
+}
+
+.hidden {
+    visibility: hidden;
+}
+
+span {
+    margin-top:1vh;
+    font-size: 1.8vmin;
+    text-align: left;
+}
+
+.keybindings {
+    display: grid;
+    grid-column-gap: 1vw;
+    grid-template-columns: repeat(2, auto);
+}
+
+.board {
+    display:flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color:white;
+}
+
 .targeted {
     position: absolute;
     width:40%;
@@ -28,10 +65,10 @@
 }
 
 .grid {
-    height: 45vh;
-    width: 45vh;
-    max-height: 75vw;
-    max-width: 75vw;
+    height: 35vh;
+    width: 35vh;
+    max-height: 65vw;
+    max-width: 65vw;
     display: grid;
     grid-template-columns: repeat(10, 10%);
     grid-template-rows: repeat(10, 10%);
@@ -48,7 +85,6 @@
 }
 
 .ocean {
-    margin-top:50px;
     background-color: rgb(7, 58, 100);
 }
 
@@ -63,16 +99,4 @@ img.vertical {
     left:50%;
     transform: translate(-50%) rotate(90deg);
     transform-origin: center center ; 
-}
-
-/* .sonar-ring {
-    height: 95%;
-    width: 95%;
-    left:50%;
-    bottom:50%;
-    transform:translate(-50%, 50%);
-    border-radius: 50%;
-    border: 1px solid rgba(255, 255, 255, 0.534);
-    z-index: 1;
-    position: absolute;
 }

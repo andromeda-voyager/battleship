@@ -1,12 +1,13 @@
 import './App.css';
-import Board from './components/Board';
+import GameBoard from './components/GameBoard';
 
 function App() {
   return (
     <div className="App">
       <header className="App-header">
-       <Board/>
+      <h1>Battleship</h1>
       </header>
+       <GameBoard/>
     </div>
   );
 }

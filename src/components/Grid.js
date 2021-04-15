@@ -1,4 +1,4 @@
-export default function GridSquares(props) {
+export default function Grid(props) {
 
     let rows = [];
     let type = props.isPlayersGrid ? "ocean" : "sonar";
@@ -11,8 +11,8 @@ export default function GridSquares(props) {
             className={`square`}
             key={i}
             onClick={() => props.onClick(i)}
-            onMouseOver={() => props.onMouseOver(i)}
-            onMouseOut={() => props.onMouseOut(i)}
+            onMouseOver={props.isPlayersGrid ? () => props.onMouseOver(i): undefined}
+            onMouseOut={props.isPlayersGrid ? () => props.onMouseOut(i): undefined}
             >
             <img
                 className={props.squares[i].isHorizontal ? undefined : 'vertical'}
