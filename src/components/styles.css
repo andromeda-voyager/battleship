@@ -1,0 +1,78 @@
+.square {
+    border: 1px solid rgba(202, 202, 202, 0.596);
+    z-index: 50;
+    box-sizing: border-box;
+    position:relative;
+}
+
+.targeted {
+    position: absolute;
+    width:40%;
+    height:40%;
+    left:50%;
+    bottom:50%;
+    transform:translate(-50%, 50%);
+    border-radius: 50%;
+}
+
+.miss {
+    background-color: white;
+}
+
+.hit {
+    background-color: red;
+}
+
+.sonar .square:hover:not(.targeted.miss){
+    background-color: rgba(255, 0, 0, 0.555);
+}
+
+.grid {
+    height: 45vh;
+    width: 45vh;
+    max-height: 75vw;
+    max-width: 75vw;
+    display: grid;
+    grid-template-columns: repeat(10, 10%);
+    grid-template-rows: repeat(10, 10%);
+}
+
+.sonar-container {
+    position: relative;
+    height: 500px;
+    width: 500px;
+}
+
+.sonar {
+    background-color: rgb(64, 105, 64);
+}
+
+.ocean {
+    margin-top:50px;
+    background-color: rgb(7, 58, 100);
+}
+
+img {
+    align-items: center; 
+    width:auto;
+    height:100%;  
+    position: relative;  
+}
+ 
+img.vertical {
+    left:50%;
+    transform: translate(-50%) rotate(90deg);
+    transform-origin: center center ; 
+}
+
+/* .sonar-ring {
+    height: 95%;
+    width: 95%;
+    left:50%;
+    bottom:50%;
+    transform:translate(-50%, 50%);
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.534);
+    z-index: 1;
+    position: absolute;
+}
