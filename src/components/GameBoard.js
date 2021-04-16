@@ -11,12 +11,13 @@ export default class GameBoard extends React.Component {
         this.playerFleet = new Fleet();
         this.enemyFleet = new Fleet();
         this.enemyFleet.randomlyPlaceShips();
+        //this.playerFleet.randomlyPlaceShips(); 
+
         this.state = {
             enemySquares: this.enemyFleet.squares.slice(),
             playerSquares: this.playerFleet.squares.slice(),
         }
         this.hoverIndex = -1;
-
     }
 
     componentDidMount() {
@@ -38,7 +39,6 @@ export default class GameBoard extends React.Component {
 
     handleShipPlacement = (index) => {
         if (this.playerFleet.isOrganizingFleet()) {
-
             let shipPlaced = this.playerFleet.placeShip(index, true);
             if (shipPlaced) {
                 this.setState({ playerSquares: this.playerFleet.squares });
@@ -46,9 +46,7 @@ export default class GameBoard extends React.Component {
                     document.removeEventListener("keydown", this.handleKeyDown);
                 }
             }
-
         }
-
     }
 
     handleEnemyGridClick = (index) => {
@@ -85,20 +83,20 @@ export default class GameBoard extends React.Component {
         }
     }
 
-
     render() {
         let endgameMessage = this.playerFleet.isAlive() ? "You won!" : "Game Over"
         let isGameOver = !this.enemyFleet.isAlive() || !this.playerFleet.isAlive();
         return (
             <div className={'board'}>
-                <Grid
+                {!this.playerFleet.isOrganizingFleet() && <Grid
                     squares={this.state.enemySquares}
                     isPlayersGrid={false}
                     onClick={this.handleEnemyGridClick}>
-                </Grid>
-                <div className={"game-end-message-wrapper"}>
-                    {<span className={isGameOver ? 'game-end-message' : 'game-end-message hidden'}>{endgameMessage}</span>}
-                </div>
+                </Grid>}
+                {!this.playerFleet.isOrganizingFleet() &&
+                    <div className={"game-end-message-wrapper"}>
+                        {<span className={isGameOver ? 'game-end-message' : 'game-end-message hidden'}>{endgameMessage}</span>}
+                    </div>}
                 <Grid
                     onClick={this.handleShipPlacement}
                     onMouseOver={this.handleOceanMouseOver}
@@ -108,7 +106,8 @@ export default class GameBoard extends React.Component {
                     isOrganizingFleet={this.playerFleet.isOrganizingFleet()}>
                 </Grid>
 
-                <Instructions show={this.playerFleet.isOrganizingFleet()}/>
+                {this.playerFleet.isOrganizingFleet() && <Instructions />}
+
             </div>
         )
     }

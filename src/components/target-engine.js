@@ -4,6 +4,7 @@ var selectedTargets = [];
 var untargetedLocations = Object.keys(Array.apply(0, Array(100))).map(Number);
 var hitLocations = [];
 var connectedHits = [];
+var targetsInIgnoredAreas = [];
 
 const attack = (grid) => {
     let target = pickTarget();
@@ -18,29 +19,30 @@ const attack = (grid) => {
     }
 }
 
-function getNextDirectedTarget(target, potentialTarget) {
+function addDirectedTargets(target, potentialTarget) {
     let direction = potentialTarget - target;
-    if (isConnectedTarget(target, potentialTarget)) {
+    if (areConnectedTargets(target, potentialTarget)) {
         if (hasBeenTargeted(potentialTarget)) {
             if (isHitAt(potentialTarget)) {
-                return getNextDirectedTarget(potentialTarget, potentialTarget + direction);
-            } else { // miss found
-                return -1;
-            }
+                addDirectedTargets(potentialTarget, potentialTarget + direction);
+            }  // miss found
+        } else {
+            selectedTargets.push(potentialTarget);
         }
-        return potentialTarget;
-
     }
-    return -1; // not connected (edge reached)
+    // not connected (edge reached)
 }
 
-function isConnectedTarget(target, potentialTarget) {
+function isValidLocation(location) {
+    return location >= 0 && location < 100;
+}
+
+function areConnectedTargets(target, potentialTarget) {
     let direction = potentialTarget - target;
-    switch (direction) {
-        case 1: return !isInRightColumn(target);
-        case -1: return !isInLeftColumn(target);
-        case 10: return !isInBottomRow(target);
-        case -10: return !isInTopRow(target);
+    if (!isValidLocation(target) || !isValidLocation(potentialTarget)) return false;
+    switch (Math.abs(direction)) {
+        case 1: return areInSameRow(target, potentialTarget);
+        case 10: return true;
         default: return false;
     }
 }
@@ -50,10 +52,64 @@ function pickTarget() {
 }
 
 function pickRandomTarget() {
-    let targetIndex = random.between(0, untargetedLocations.length)
-    let target = untargetedLocations[targetIndex];
+    let targetIndex;
+    let target = untargetedLocations.length < 65 ? getTargetFromIgnoredAreas() : getRandomUntargeted();
+    targetIndex = untargetedLocations.indexOf(target);
     untargetedLocations.splice(targetIndex, 1);
     return target;
+}
+
+function getRandomUntargeted() {
+    return untargetedLocations[random.between(0, untargetedLocations.length)];
+}
+
+function getTargetFromIgnoredAreas() {
+    addFromIgnoredRows(5);
+    addFromIgnoredColumns(5);
+    if (targetsInIgnoredAreas.length > 0) {
+        let targetIndex = random.between(0, targetsInIgnoredAreas.length)
+        let target = targetsInIgnoredAreas[targetIndex];
+        targetsInIgnoredAreas = [];
+        return target;
+    }
+    return getRandomUntargeted(); // returns a random location if no target was found 
+}
+
+function addFromIgnoredRows(ignoredTargetsMin) {
+    let consecutiveLocations = 0;
+    let previousLocation = -2; // -1 and 0 would be consecutive to spaces on the board (0 and 1 respectively)
+    for (let location of untargetedLocations) {
+        if (areConnectedTargets(previousLocation, location)) {
+            consecutiveLocations++;
+            if (consecutiveLocations === ignoredTargetsMin) {
+                targetsInIgnoredAreas.push(location - Math.ceil(ignoredTargetsMin / 2));
+            }
+        } else {
+            consecutiveLocations = 0;
+        }
+        previousLocation = location;
+    }
+}
+
+function addFromIgnoredColumns(ignoredTargetsMin) {
+    let consecutiveLocations = 0;
+    let previousLocation = -11; // values from -1 to -10 can be consecutive with spaces on the board
+    let location;
+    for (let i = 0; i < 10; i++) {
+        for (let j = 0; j < 10; j++) {
+            location = i + 10 * j;
+            if (untargetedLocations.indexOf(location) !== -1 &&
+                areConnectedTargets(previousLocation, location)) {
+                consecutiveLocations++;
+                if (consecutiveLocations === ignoredTargetsMin) {
+                    return targetsInIgnoredAreas.push(location - Math.ceil(ignoredTargetsMin / 2) * 10);
+                }
+            } else {
+                consecutiveLocations = 0;
+            }
+            previousLocation = location;
+        }
+    }
 }
 
 function pickFromSelectedTargets() {
@@ -70,16 +126,10 @@ function pickFromSelectedTargets() {
 function addPotentialTargets(target, isHit) {
     if (isHit) {
         let direction = getDirectionOfShip();
-        if (direction) {
+        if (direction) { // is 0 if direction can not be determined
             selectedTargets = [];
-            let nextTarget = getNextDirectedTarget(target, target + direction)
-            if (nextTarget !== -1) {
-                selectedTargets.push(nextTarget);
-            }
-            nextTarget = getNextDirectedTarget(target, target - direction)
-            if (nextTarget !== -1) {
-                selectedTargets.push(nextTarget);
-            }
+            addDirectedTargets(target, target + direction);
+            addDirectedTargets(target, target - direction);
         } else {
             addConnectedTargets(target);
         }
@@ -110,7 +160,7 @@ function addConnectedTargets(location) {
 }
 
 function isConnectedAndUntargeted(target, potentialTarget) {
-    return isConnectedTarget(target, potentialTarget) && !hasBeenTargeted(potentialTarget);
+    return areConnectedTargets(target, potentialTarget) && !hasBeenTargeted(potentialTarget);
 }
 
 function hasBeenTargeted(location) {
@@ -121,20 +171,8 @@ function isHitAt(location) {
     return hitLocations.indexOf(location) !== -1;
 }
 
-function isInLeftColumn(index) {
-    return index % 10 === 0;
-}
-
-function isInRightColumn(index) {
-    return index % 10 === 9;
-}
-
-function isInBottomRow(index) {
-    return index > 89
-}
-
-function isInTopRow(index) {
-    return index < 10
+function areInSameRow(locationOne, locationTwo) {
+    return (Math.trunc(locationOne / 10) === Math.trunc(locationTwo / 10));
 }
 
 const TargetEngine = {

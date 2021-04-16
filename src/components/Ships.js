@@ -9,7 +9,6 @@ import battleship2 from '../assets/battleship2.png';
 import battleship3 from '../assets/battleship3.png';
 import battleship4 from '../assets/battleship4.png';
 
-
 import destroyer1 from '../assets/destroyer1.png';
 import destroyer2 from '../assets/destroyer2.png';
 import destroyer3 from '../assets/destroyer3.png';

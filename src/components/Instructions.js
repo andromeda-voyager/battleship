@@ -2,10 +2,8 @@ import React from 'react'
 import './styles.css'
 
 export default function Instructions(props) {
-
-    let show = props.show;
     return (
-        <div className={show ? 'instructions' : 'instructions hidden'}>
+        <div className={'instructions'}>
             <span>Place your ships!</span>
             <div className={'keybindings'}>
                 <span>Left Click:</span> <span>Place Ship</span>

@@ -113,7 +113,6 @@ export default class Fleet {
             return true;
         }
         return false;
-
     }
 
     placeShipHorizontally = (index, isAnchored) => {
@@ -148,20 +147,17 @@ export default class Fleet {
         for (let i = 0; i < length; i++) {
             this.squares[index + i * 10] = { image: undefined, isHorizontal: false, isAnchored: false, wasAttacked: false };
         }
-
     }
 
     removeShip = (index) => {
         const length = this.currentShip.images.length;
         if (this.isValidPlacement(index)) {
-
             if (this.isPlacingHorizontally) {
                 this.removeHorizontalShip(index, length);
             } else {
                 this.removeVerticalShip(index, length);
             }
             return true;
-
         }
         return false;
     }
