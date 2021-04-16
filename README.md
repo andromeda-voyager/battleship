@@ -1,6 +1,6 @@
 # Battleship
 
-Play at https://battleship-mxi7z.ondigitalocean.app/
+Play at https://www.matthewpotts.dev/battleship
 
 ### Start
 
