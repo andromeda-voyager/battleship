@@ -5,8 +5,13 @@ var untargetedLocations = Object.keys(Array.apply(0, Array(100))).map(Number);
 var hitLocations = [];
 var connectedHits = [];
 var targetsInIgnoredAreas = [];
+var ignoredTargetsMin = 4; // values from 3 to 5 are ideal
 
 const attack = (grid) => {
+    // addFromIgnoredColumns(4);
+    // for (let target of targetsInIgnoredAreas) {
+    //     grid.attackSquare(target);
+    // }
     let target = pickTarget();
     let isHit = grid.attackSquare(target);
     if (isHit) {
@@ -55,7 +60,7 @@ function pickTarget() {
 
 function pickRandomTarget() {
     let targetIndex;
-    let target = untargetedLocations.length < 65 ? getTargetFromIgnoredAreas() : getRandomUntargeted();
+    let target = untargetedLocations.length < 70 ? getTargetFromIgnoredAreas() : getRandomUntargeted();
     targetIndex = untargetedLocations.indexOf(target);
     untargetedLocations.splice(targetIndex, 1);
     return target;
@@ -66,8 +71,8 @@ function getRandomUntargeted() {
 }
 
 function getTargetFromIgnoredAreas() {
-    addFromIgnoredRows(5);
-    addFromIgnoredColumns(5);
+    addFromIgnoredRows();
+    addFromIgnoredColumns();
     if (targetsInIgnoredAreas.length > 0) {
         let targetIndex = random.between(0, targetsInIgnoredAreas.length)
         let target = targetsInIgnoredAreas[targetIndex];
@@ -77,17 +82,18 @@ function getTargetFromIgnoredAreas() {
     return getRandomUntargeted(); // returns a random location if no target was found 
 }
 
-function addFromIgnoredRows(ignoredTargetsMin) {
+function addFromIgnoredRows() {
     let consecutiveLocations = 0;
     let previousLocation = -2; // -1 and 0 would be consecutive to spaces on the board (0 and 1 respectively)
     for (let location of untargetedLocations) {
         if (areConnectedTargets(previousLocation, location)) {
             consecutiveLocations++;
-            if (consecutiveLocations === ignoredTargetsMin) {
-                targetsInIgnoredAreas.push(location - Math.ceil(ignoredTargetsMin / 2));
+            if (consecutiveLocations >= ignoredTargetsMin) {
+                targetsInIgnoredAreas.push(location - Math.floor(ignoredTargetsMin / 2));
+                consecutiveLocations = Math.floor(ignoredTargetsMin / 2) - 1;
             }
-        } else {
-            consecutiveLocations = 0;
+        } else { // next row or hit/miss inbetween locations
+            consecutiveLocations = 1;
         }
         previousLocation = location;
     }
@@ -95,18 +101,23 @@ function addFromIgnoredRows(ignoredTargetsMin) {
 
 function addFromIgnoredColumns(ignoredTargetsMin) {
     let consecutiveLocations = 0;
-    let previousLocation = -11; // values from -1 to -10 can be consecutive with spaces on the board
+    let previousLocation = -11; // if value was between 0 and -10, it could lead to a false previous location
     let location;
     for (let i = 0; i < 10; i++) {
-        for (let j = 0; j < 10; j++) {
+        for (let j = 0; j < 10; j++) { // j starts at 1 because (i=0,j=0) is set to previousLocation 
             location = i + 10 * j;
-            if (untargetedLocations.indexOf(location) !== -1 &&
-                areConnectedTargets(previousLocation, location)) {
-                consecutiveLocations++;
-                if (consecutiveLocations === ignoredTargetsMin) {
-                    return targetsInIgnoredAreas.push(location - Math.ceil(ignoredTargetsMin / 2) * 10);
+            if (untargetedLocations.indexOf(location) !== -1) {
+                if (areConnectedTargets(previousLocation, location)) {
+                    consecutiveLocations++;
+                    if (consecutiveLocations >= ignoredTargetsMin) { 
+                        targetsInIgnoredAreas.push(location - Math.floor(ignoredTargetsMin / 2) * 10);
+                        consecutiveLocations = Math.floor(ignoredTargetsMin / 2) - 1;
+                    }
+                } else { // next column
+                    consecutiveLocations = 1;
                 }
-            } else {
+            }
+            else { // hit/miss location
                 consecutiveLocations = 0;
             }
             previousLocation = location;
