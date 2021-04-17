@@ -88,11 +88,12 @@ export default class GameBoard extends React.Component {
         let isGameOver = !this.enemyFleet.isAlive() || !this.playerFleet.isAlive();
         return (
             <div className={'board'}>
-                {!this.playerFleet.isOrganizingFleet() && <Grid
-                    squares={this.state.enemySquares}
-                    isPlayersGrid={false}
-                    onClick={this.handleEnemyGridClick}>
-                </Grid>}
+                {!this.playerFleet.isOrganizingFleet() &&
+                    <Grid
+                        squares={this.state.enemySquares}
+                        isPlayersGrid={false}
+                        onClick={this.handleEnemyGridClick}>
+                    </Grid>}
                 {!this.playerFleet.isOrganizingFleet() &&
                     <div className={"game-end-message-wrapper"}>
                         {<span className={isGameOver ? 'game-end-message' : 'game-end-message hidden'}>{endgameMessage}</span>}

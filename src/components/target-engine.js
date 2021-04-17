@@ -12,19 +12,21 @@ const attack = (grid) => {
     if (isHit) {
         hitLocations.push(target);
         connectedHits.push(target);
+        addPotentialTargets(target, isHit);
     }
-    addPotentialTargets(target, isHit);
+
+    // If there are no selected targets, no information can be gathered from previous hits
     if (selectedTargets.length === 0) {
         connectedHits = [];
     }
 }
 
-function addDirectedTargets(target, potentialTarget) {
-    let direction = potentialTarget - target;
-    if (areConnectedTargets(target, potentialTarget)) {
+function addDirectedTargets(previousTarget, direction) {
+    let potentialTarget = previousTarget + direction;
+    if (areConnectedTargets(previousTarget, potentialTarget)) {
         if (hasBeenTargeted(potentialTarget)) {
             if (isHitAt(potentialTarget)) {
-                addDirectedTargets(potentialTarget, potentialTarget + direction);
+                addDirectedTargets(potentialTarget, direction);
             }  // miss found
         } else {
             selectedTargets.push(potentialTarget);
@@ -37,11 +39,11 @@ function isValidLocation(location) {
     return location >= 0 && location < 100;
 }
 
-function areConnectedTargets(target, potentialTarget) {
-    let direction = potentialTarget - target;
-    if (!isValidLocation(target) || !isValidLocation(potentialTarget)) return false;
-    switch (Math.abs(direction)) {
-        case 1: return areInSameRow(target, potentialTarget);
+function areConnectedTargets(targetOne, targetTwo) {
+    let direction = Math.abs(targetOne - targetTwo);
+    if (!isValidLocation(targetOne) || !isValidLocation(targetTwo)) return false;
+    switch (direction) {
+        case 1: return areInSameRow(targetOne, targetTwo);
         case 10: return true;
         default: return false;
     }
@@ -123,27 +125,25 @@ function pickFromSelectedTargets() {
     return target;
 }
 
-function addPotentialTargets(target, isHit) {
-    if (isHit) {
-        let direction = getDirectionOfShip();
-        if (direction) { // is 0 if direction can not be determined
-            selectedTargets = [];
-            addDirectedTargets(target, target + direction);
-            addDirectedTargets(target, target - direction);
-        } else {
-            addConnectedTargets(target);
-        }
+function addPotentialTargets(previousTarget) {
+    let direction = getDirectionOfShip();
+    if (direction) { // is 0 if direction can not be determined
+        selectedTargets = [];
+        addDirectedTargets(previousTarget, direction);
+        addDirectedTargets(previousTarget, -direction);
+    } else {
+        addTargetsConnectedTo(previousTarget);
     }
 }
 
-// returns the direction of the ship (10, -10, 1, -1)
+// returns the direction of the ship (10, -10, 1, -1, 0)
 // returns 0 if the direction can not be calculated (when there is only one connected hit)
 function getDirectionOfShip() {
     return connectedHits.length > 1 ?
         connectedHits[1] - connectedHits[0] : 0;
 }
 
-function addConnectedTargets(location) {
+function addTargetsConnectedTo(location) {
     selectedTargets = [];
     if (isConnectedAndUntargeted(location, location - 1)) {
         selectedTargets.push(location - 1);

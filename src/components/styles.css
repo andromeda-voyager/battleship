@@ -67,8 +67,6 @@ span {
 .grid {
     height: 35vh;
     width: 35vh;
-    max-height: 65vw;
-    max-width: 65vw;
     display: grid;
     grid-template-columns: repeat(10, 10%);
     grid-template-rows: repeat(10, 10%);
