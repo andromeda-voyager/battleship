@@ -1,17 +1,13 @@
 import random from "../utils/random";
 
 var selectedTargets = [];
-var untargetedLocations = Object.keys(Array.apply(0, Array(100))).map(Number);
+var unattackedLocations = Object.keys(Array.apply(0, Array(100))).map(Number);
 var hitLocations = [];
 var connectedHits = [];
 var targetsInIgnoredAreas = [];
 var ignoredTargetsMin = 4; // values from 3 to 5 are ideal
 
 const attack = (grid) => {
-    // addFromIgnoredColumns(4);
-    // for (let target of targetsInIgnoredAreas) {
-    //     grid.attackSquare(target);
-    // }
     let target = pickTarget();
     let isHit = grid.attackSquare(target);
     if (isHit) {
@@ -24,12 +20,17 @@ const attack = (grid) => {
     if (selectedTargets.length === 0) {
         connectedHits = [];
     }
+
+}
+
+function pickTarget() {
+    return selectedTargets.length > 0 ? pickFromSelectedTargets() : pickRandomTarget();
 }
 
 function addDirectedTargets(previousTarget, direction) {
     let potentialTarget = previousTarget + direction;
-    if (areConnectedTargets(previousTarget, potentialTarget)) {
-        if (hasBeenTargeted(potentialTarget)) {
+    if (areConnected(previousTarget, potentialTarget)) {
+        if (hasBeenAttacked(potentialTarget)) {
             if (isHitAt(potentialTarget)) {
                 addDirectedTargets(potentialTarget, direction);
             }  // miss found
@@ -40,34 +41,22 @@ function addDirectedTargets(previousTarget, direction) {
     // not connected (edge reached)
 }
 
-function isValidLocation(location) {
-    return location >= 0 && location < 100;
-}
-
-function areConnectedTargets(targetOne, targetTwo) {
-    let direction = Math.abs(targetOne - targetTwo);
-    if (!isValidLocation(targetOne) || !isValidLocation(targetTwo)) return false;
-    switch (direction) {
-        case 1: return areInSameRow(targetOne, targetTwo);
-        case 10: return true;
-        default: return false;
-    }
-}
-
-function pickTarget() {
-    return selectedTargets.length > 0 ? pickFromSelectedTargets() : pickRandomTarget();
-}
-
 function pickRandomTarget() {
     let targetIndex;
-    let target = untargetedLocations.length < 70 ? getTargetFromIgnoredAreas() : getRandomUntargeted();
-    targetIndex = untargetedLocations.indexOf(target);
-    untargetedLocations.splice(targetIndex, 1);
+    //   let target = unattackedLocations.length < 70 ? getTargetFromIgnoredAreas() : getRandomUnattacked();
+    let target = getTargetFromIgnoredAreas();
+    if (hasBeenAttacked(target)) {
+        console.log("why you do this");
+        console.log(target);
+        console.log(unattackedLocations.length);
+    }
+    targetIndex = unattackedLocations.indexOf(target);
+    unattackedLocations.splice(targetIndex, 1);
     return target;
 }
 
-function getRandomUntargeted() {
-    return untargetedLocations[random.between(0, untargetedLocations.length)];
+function getRandomUnattacked() {
+    return unattackedLocations[random.between(0, unattackedLocations.length)];
 }
 
 function getTargetFromIgnoredAreas() {
@@ -79,24 +68,27 @@ function getTargetFromIgnoredAreas() {
         targetsInIgnoredAreas = [];
         return target;
     }
-    return getRandomUntargeted(); // returns a random location if no target was found 
+    return getRandomUnattacked(); // returns a random location if no target was found 
 }
 
 function addFromIgnoredRows() {
-    let consecutiveLocations = 0;
-    let previousLocation = -2; // -1 and 0 would be consecutive to spaces on the board (0 and 1 respectively)
-    for (let location of untargetedLocations) {
-        if (areConnectedTargets(previousLocation, location)) {
+    let consecutiveLocations = 1;
+    for (let i = 1; i < unattackedLocations.length; i++) {
+        if (inSameRowAndConsecutive(unattackedLocations[i], unattackedLocations[i - 1])) {
             consecutiveLocations++;
             if (consecutiveLocations >= ignoredTargetsMin) {
-                targetsInIgnoredAreas.push(location - Math.floor(ignoredTargetsMin / 2));
+                targetsInIgnoredAreas.push(unattackedLocations[i] - Math.floor(ignoredTargetsMin / 2));
                 consecutiveLocations = Math.floor(ignoredTargetsMin / 2) - 1;
             }
         } else { // next row or hit/miss inbetween locations
             consecutiveLocations = 1;
         }
-        previousLocation = location;
     }
+}
+
+function inSameRowAndConsecutive(targetOne, targetTwo) {
+    return Math.abs(targetOne - targetTwo) === 1 && areInSameRow(targetOne, targetTwo);
+
 }
 
 function addFromIgnoredColumns(ignoredTargetsMin) {
@@ -106,10 +98,10 @@ function addFromIgnoredColumns(ignoredTargetsMin) {
     for (let i = 0; i < 10; i++) {
         for (let j = 0; j < 10; j++) { // j starts at 1 because (i=0,j=0) is set to previousLocation 
             location = i + 10 * j;
-            if (untargetedLocations.indexOf(location) !== -1) {
-                if (areConnectedTargets(previousLocation, location)) {
+            if (!hasBeenAttacked(location)) {
+                if (inSameColumnAndConsecutive(previousLocation, location)) {
                     consecutiveLocations++;
-                    if (consecutiveLocations >= ignoredTargetsMin) { 
+                    if (consecutiveLocations >= ignoredTargetsMin) {
                         targetsInIgnoredAreas.push(location - Math.floor(ignoredTargetsMin / 2) * 10);
                         consecutiveLocations = Math.floor(ignoredTargetsMin / 2) - 1;
                     }
@@ -117,7 +109,7 @@ function addFromIgnoredColumns(ignoredTargetsMin) {
                     consecutiveLocations = 1;
                 }
             }
-            else { // hit/miss location
+            else { // location was already attacked/targeted
                 consecutiveLocations = 0;
             }
             previousLocation = location;
@@ -125,13 +117,17 @@ function addFromIgnoredColumns(ignoredTargetsMin) {
     }
 }
 
+function inSameColumnAndConsecutive(targetOne, targetTwo) {
+    return Math.abs(targetOne - targetTwo) === 10 && areInSameColumn(targetOne, targetTwo);
+}
+
 function pickFromSelectedTargets() {
     let targetIndex = random.between(0, selectedTargets.length)
     let target = selectedTargets[targetIndex];
     selectedTargets.splice(targetIndex, 1);
-    targetIndex = untargetedLocations.indexOf(target);
+    targetIndex = unattackedLocations.indexOf(target);
     if (targetIndex !== -1) {
-        untargetedLocations.splice(targetIndex, 1);
+        unattackedLocations.splice(targetIndex, 1);
     }
     return target;
 }
@@ -147,6 +143,36 @@ function addPotentialTargets(previousTarget) {
     }
 }
 
+function addTargetsConnectedTo(location) {
+    selectedTargets = [];
+    if (areConnected(location, location - 1) && !hasBeenAttacked(location - 1)) {
+        selectedTargets.push(location - 1);
+    }
+    if (areConnected(location, location + 1) && !hasBeenAttacked(location + 1)) {
+        selectedTargets.push(location + 1);
+    }
+    if (areConnected(location, location + 10) && !hasBeenAttacked(location + 10)) {
+        selectedTargets.push(location + 10);
+    }
+    if (areConnected(location, location - 10) && !hasBeenAttacked(location - 10)) {
+        selectedTargets.push(location - 10);
+    }
+}
+
+function isValidLocation(location) {
+    return location >= 0 && location < 100;
+}
+
+function areConnected(targetOne, targetTwo) {
+    let direction = Math.abs(targetOne - targetTwo);
+    if (!isValidLocation(targetOne) || !isValidLocation(targetTwo)) return false;
+    switch (direction) {
+        case 1: return areInSameRow(targetOne, targetTwo);
+        case 10: return true;
+        default: return false;
+    }
+}
+
 // returns the direction of the ship (10, -10, 1, -1, 0)
 // returns 0 if the direction can not be calculated (when there is only one connected hit)
 function getDirectionOfShip() {
@@ -154,28 +180,8 @@ function getDirectionOfShip() {
         connectedHits[1] - connectedHits[0] : 0;
 }
 
-function addTargetsConnectedTo(location) {
-    selectedTargets = [];
-    if (isConnectedAndUntargeted(location, location - 1)) {
-        selectedTargets.push(location - 1);
-    }
-    if (isConnectedAndUntargeted(location, location + 1)) {
-        selectedTargets.push(location + 1);
-    }
-    if (isConnectedAndUntargeted(location, location + 10)) {
-        selectedTargets.push(location + 10);
-    }
-    if (isConnectedAndUntargeted(location, location - 10)) {
-        selectedTargets.push(location - 10);
-    }
-}
-
-function isConnectedAndUntargeted(target, potentialTarget) {
-    return areConnectedTargets(target, potentialTarget) && !hasBeenTargeted(potentialTarget);
-}
-
-function hasBeenTargeted(location) {
-    return untargetedLocations.indexOf(location) === -1;
+function hasBeenAttacked(location) {
+    return unattackedLocations.indexOf(location) === -1;
 }
 
 function isHitAt(location) {
@@ -184,6 +190,10 @@ function isHitAt(location) {
 
 function areInSameRow(locationOne, locationTwo) {
     return (Math.trunc(locationOne / 10) === Math.trunc(locationTwo / 10));
+}
+
+function areInSameColumn(locationOne, locationTwo) {
+    return (Math.trunc(locationOne % 10) === Math.trunc(locationTwo % 10));
 }
 
 const TargetEngine = {

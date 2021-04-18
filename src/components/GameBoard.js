@@ -11,8 +11,6 @@ export default class GameBoard extends React.Component {
         this.playerFleet = new Fleet();
         this.enemyFleet = new Fleet();
         this.enemyFleet.randomlyPlaceShips();
-        this.playerFleet.randomlyPlaceShips(); 
-
         this.state = {
             enemySquares: this.enemyFleet.squares.slice(),
             playerSquares: this.playerFleet.squares.slice(),
