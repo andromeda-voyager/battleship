@@ -39,7 +39,9 @@ span {
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    height:auto;
     color:white;
+    padding-bottom:5px;
 }
 
 .targeted {
@@ -67,6 +69,8 @@ span {
 .grid {
     height: 35vh;
     width: 35vh;
+    min-width: 200px;
+    min-height:200px;
     display: grid;
     grid-template-columns: repeat(10, 10%);
     grid-template-rows: repeat(10, 10%);

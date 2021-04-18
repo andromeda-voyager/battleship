@@ -43,13 +43,7 @@ function addDirectedTargets(previousTarget, direction) {
 
 function pickRandomTarget() {
     let targetIndex;
-    //   let target = unattackedLocations.length < 70 ? getTargetFromIgnoredAreas() : getRandomUnattacked();
-    let target = getTargetFromIgnoredAreas();
-    if (hasBeenAttacked(target)) {
-        console.log("why you do this");
-        console.log(target);
-        console.log(unattackedLocations.length);
-    }
+    let target = unattackedLocations.length < 70 ? getTargetFromIgnoredAreas() : getRandomUnattacked();
     targetIndex = unattackedLocations.indexOf(target);
     unattackedLocations.splice(targetIndex, 1);
     return target;
