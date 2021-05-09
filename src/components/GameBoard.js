@@ -4,6 +4,7 @@ import Grid from './Grid.js';
 import Instructions from './Instructions.js';
 import TargetEngine from './target-engine.js';
 import './styles.css'
+import Controls from './controls.js';
 
 export default class GameBoard extends React.Component {
     constructor(props) {
@@ -12,37 +13,31 @@ export default class GameBoard extends React.Component {
         this.enemyFleet = new Fleet();
         this.enemyFleet.randomlyPlaceShips();
         this.state = {
+            usingControls: false,
             enemySquares: this.enemyFleet.squares.slice(),
             playerSquares: this.playerFleet.squares.slice(),
         }
-        this.hoverIndex = -1;
     }
 
     componentDidMount() {
-        document.addEventListener("keydown", this.handleKeyDown);
+        document.addEventListener("keydown", this.changeShipOrientaion);
     }
 
     componentWillUnmount() {
-        document.removeEventListener("keydown", this.handleKeyDown);
+        document.removeEventListener("keydown", this.changeShipOrientaion);
     }
 
-    handleKeyDown = () => {
-        if (this.hoverIndex >= 0) {
-            this.playerFleet.removeShip(this.hoverIndex);
-            this.playerFleet.toggleOrientation();
-            this.playerFleet.placeShip(this.hoverIndex, false);
-            this.setState({ playerSquares: this.playerFleet.squares.slice() })
-        }
+    changeShipOrientaion = () => {
+        this.playerFleet.toggleOrientation();
+        this.setState({ playerSquares: this.playerFleet.squares.slice() })
     }
 
-    handleShipPlacement = (index) => {
+    placeShip = () => {
         if (this.playerFleet.isOrganizingFleet()) {
-            let shipPlaced = this.playerFleet.placeShip(index, true);
-            if (shipPlaced) {
-                this.setState({ playerSquares: this.playerFleet.squares });
-                if (!this.playerFleet.isOrganizingFleet()) {
-                    document.removeEventListener("keydown", this.handleKeyDown);
-                }
+            this.playerFleet.placeShip(false);
+            this.setState({ playerSquares: this.playerFleet.squares });
+            if (!this.playerFleet.isOrganizingFleet()) {
+                document.removeEventListener("keydown", this.changeShipOrientaion);
             }
         }
     }
@@ -65,21 +60,48 @@ export default class GameBoard extends React.Component {
     }
 
     handleOceanMouseOver = (index) => {
-        if (this.playerFleet.isOrganizingFleet()) {
-            this.hoverIndex = index;
-            let shipPlaced = this.playerFleet.placeShip(index, false);
-            if (shipPlaced) this.setState({ playerSquares: this.playerFleet.squares.slice() });
+        if (this.playerFleet.isOrganizingFleet() && !this.state.usingControls) {
+            this.playerFleet.changePlacementIndex(index);
+            this.setState({ playerSquares: this.playerFleet.squares.slice() });
         }
+    }
 
+    addShipAt(index) {
+        this.hoverIndex = index;
+        let shipPlaced = this.playerFleet.placeShip(index, true);
+        if (shipPlaced) this.setState({ playerSquares: this.playerFleet.squares.slice() });
     }
 
     handleOceanMouseOut = (index) => {
-        if (this.playerFleet.isOrganizingFleet()) {
-            this.hoverIndex = -1;
-            let shipRemoved = this.playerFleet.removeShip(index);
-            if (shipRemoved) this.setState({ playerSquares: this.playerFleet.squares.slice() });
+        if (this.playerFleet.isOrganizingFleet() && !this.state.usingControls) {
+            this.playerFleet.removeTemporaryShip();
+            this.setState({ playerSquares: this.playerFleet.squares.slice() });
         }
     }
+
+    removeShipAt(index) {
+        let shipRemoved = this.playerFleet.removeTemporaryShip(index);
+        if (shipRemoved) this.setState({ playerSquares: this.playerFleet.squares.slice() });
+    }
+
+    toggleControls = () => {
+        this.setState({ usingControls: !this.state.usingControls });
+        this.usingControls = !this.usingControls;
+        if (this.usingControls) {
+            this.playerFleet.changePlacementIndex(44);
+        }
+        else {
+            this.playerFleet.removeTemporaryShip();
+        }
+        this.setState({ playerSquares: this.playerFleet.squares.slice() });
+    }
+
+    moveShipPlacement = (direction) => {
+        this.playerFleet.moveShipPlacement(direction);
+        this.setState({ playerSquares: this.playerFleet.squares.slice() });
+    }
+
+
 
     render() {
         let endgameMessage = this.playerFleet.isAlive() ? "You won!" : "Game Over"
@@ -97,7 +119,7 @@ export default class GameBoard extends React.Component {
                         {<span className={isGameOver ? 'game-end-message' : 'game-end-message hidden'}>{endgameMessage}</span>}
                     </div>}
                 <Grid
-                    onClick={this.handleShipPlacement}
+                    onClick={this.placeShip}
                     onMouseOver={this.handleOceanMouseOver}
                     onMouseOut={this.handleOceanMouseOut}
                     squares={this.state.playerSquares}
@@ -105,8 +127,22 @@ export default class GameBoard extends React.Component {
                     isOrganizingFleet={this.playerFleet.isOrganizingFleet()}>
                 </Grid>
 
-                {this.playerFleet.isOrganizingFleet() && <Instructions />}
+                {this.playerFleet.isOrganizingFleet() &&
+                    <div className="controls-instructions-container">
+                        {!this.state.usingControls && <Instructions />}
+                        <button className="toggle-controls-button" onClick={() => this.toggleControls()}>
+                            {this.state.usingControls ? "Turn off controls" : "Turn on controls"}
+                        </button>
 
+                        {this.state.usingControls &&
+                            <Controls
+                                move={this.moveShipPlacement}
+                                rotate={this.changeShipOrientaion}
+                                place={this.placeShip}
+                            />
+                        }
+                    </div>
+                }
             </div>
         )
     }

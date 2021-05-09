@@ -5,10 +5,14 @@ export default function Grid(props) {
     for (let i = 0; i < props.squares.length; i++) {
         let targetClasses = "";
         if (props.squares[i].wasAttacked) {
-            targetClasses += props.squares[i].isAnchored ? "square targeted hit" : "square targeted miss";
+            targetClasses += props.squares[i].image !== undefined ? "targeted hit" : "targeted miss";
+        }
+        let squareClasses = "square";
+        if(props.squares[i].isTemporary && props.isOrganizingFleet) {
+            squareClasses += props.squares[i].image ? " red" : " green";
         }
         rows.push(<div
-            className={`square`}
+            className={squareClasses}
             key={i}
             onClick={() => props.onClick(i)}
             onMouseOver={props.isPlayersGrid ? () => props.onMouseOver(i): undefined}
