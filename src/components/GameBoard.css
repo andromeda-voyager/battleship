@@ -1,0 +1,53 @@
+.game-end-message-wrapper {
+    padding-top:1vh;
+    padding-bottom: 1vh;
+}
+
+.game-end-message {
+    font-size: 4vmin;
+}
+
+.hidden {
+    visibility: hidden;
+}
+
+.board span {
+    margin-top:1vh;
+    font-size: calc(10px + 1vmin);
+    text-align: left;
+}
+
+.board {
+    display:flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color:white;
+}
+
+.sonar-container {
+    position: relative;
+    height: 500px;
+    width: 500px;
+}
+
+.toggle-controls-button {
+    border-radius: 5px;
+    padding:15px;
+    background-color: rgb(24, 73, 180);
+    border: none;
+    color:white;
+    margin-top:15px;
+}
+
+.toggle-controls:hover {
+    transform: scale(1.1);
+}
+
+.controls-instructions-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    row-gap: 20px;
+}

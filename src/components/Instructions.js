@@ -1,5 +1,5 @@
 import React from 'react'
-import './styles.css'
+import './Instructions.css'
 
 export default function Instructions(props) {
     return (

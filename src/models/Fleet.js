@@ -1,6 +1,6 @@
 import random from '../utils/random.js';
 import Ships from './Ships.js';
-import Direction from './direction.js';
+import Direction from './Direction.js';
 
 export default class Fleet {
 
@@ -40,10 +40,6 @@ export default class Fleet {
         if (isHit) this.fleetHealth--;
         return isHit;
     }
-
-    // isValidLocation = (index) => {
-    //     return index >= 0 && index < 100
-    // }
 
     wasAttackedAt = (index) => {
         return this.squares[index].wasAttacked;

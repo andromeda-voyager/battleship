@@ -1,5 +1,6 @@
-import Direction from "./direction"
+import Direction from "../models/Direction"
 import rotate from '../assets/rotate.svg';
+import './Controls.css'
 
 
 export default function Controls(props) {

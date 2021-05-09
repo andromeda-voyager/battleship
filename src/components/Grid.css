@@ -1,0 +1,72 @@
+.grid {
+    border-top: 1px solid rgba(0, 0, 0, 0.596);
+    border-left: 1px solid rgba(0, 0, 0, 0.596);
+    height: 35vh;
+    width: 35vh;
+    min-width: 275px;
+    min-height:275px;
+    display: grid;
+    grid-template-columns: repeat(10, 10%);
+    grid-template-rows: repeat(10, 10%);
+    box-sizing: border-box;
+}
+
+.square {
+    border-right: 1px solid rgba(0, 0, 0, 0.596);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.596);
+    z-index: 50;
+    box-sizing: border-box;
+    position:relative;
+    box-sizing: border-box;
+}
+
+.square.green {
+    background-color: rgb(36, 170, 36);
+}
+
+.square.red {
+    background-color: red;
+}
+
+.targeted {
+    position: absolute;
+    width:40%;
+    height:40%;
+    left:50%;
+    bottom:50%;
+    transform:translate(-50%, 50%);
+    border-radius: 50%;
+}
+
+.miss {
+    background-color: white;
+}
+
+.hit {
+    background-color: red;
+}
+
+.sonar .square:hover:not(.targeted.miss){
+    background-color: rgba(255, 0, 0, 0.555);
+}
+
+.sonar {
+    background-color: rgb(64, 105, 64);
+}
+
+.ocean {
+    background-color: rgb(7, 58, 100);
+}
+
+img {
+    align-items: center; 
+    width:auto;
+    height:100%;  
+    position: relative;  
+}
+ 
+img.vertical {
+    left:50%;
+    transform: translate(-50%) rotate(90deg);
+    transform-origin: center center ; 
+}

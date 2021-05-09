@@ -6,7 +6,7 @@
     border: solid rgb(231, 231, 231);
     border-width: 0 10px 10px 0;
     display: block;
-    margin:7px;
+    margin: 7px;
 }
 
 .controls-container {
@@ -56,8 +56,14 @@
     align-items: center;
 }
 
+.place-ship-button {
+    padding:10px;
+    margin-bottom:15px;
+}
+
 button {
     cursor: pointer;
+    outline:none;
 }
 
 button:hover:not(.arrow) {

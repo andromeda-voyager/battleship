@@ -1,10 +1,10 @@
 import React from 'react'
-import Fleet from './Fleet.js';
+import Fleet from '../models/Fleet.js';
 import Grid from './Grid.js';
 import Instructions from './Instructions.js';
-import TargetEngine from './target-engine.js';
-import './styles.css'
-import Controls from './controls.js';
+import TargetEngine from '../models/target-engine.js';
+import './GameBoard.css'
+import Controls from './Controls.js';
 
 export default class GameBoard extends React.Component {
     constructor(props) {
@@ -13,7 +13,7 @@ export default class GameBoard extends React.Component {
         this.enemyFleet = new Fleet();
         this.enemyFleet.randomlyPlaceShips();
         this.state = {
-            usingControls: false,
+            isUsingControls: false,
             enemySquares: this.enemyFleet.squares.slice(),
             playerSquares: this.playerFleet.squares.slice(),
         }
@@ -60,7 +60,7 @@ export default class GameBoard extends React.Component {
     }
 
     handleOceanMouseOver = (index) => {
-        if (this.playerFleet.isOrganizingFleet() && !this.state.usingControls) {
+        if (this.playerFleet.isOrganizingFleet() && !this.state.isUsingControls) {
             this.playerFleet.changePlacementIndex(index);
             this.setState({ playerSquares: this.playerFleet.squares.slice() });
         }
@@ -73,7 +73,7 @@ export default class GameBoard extends React.Component {
     }
 
     handleOceanMouseOut = (index) => {
-        if (this.playerFleet.isOrganizingFleet() && !this.state.usingControls) {
+        if (this.playerFleet.isOrganizingFleet() && !this.state.isUsingControls) {
             this.playerFleet.removeTemporaryShip();
             this.setState({ playerSquares: this.playerFleet.squares.slice() });
         }
@@ -85,9 +85,9 @@ export default class GameBoard extends React.Component {
     }
 
     toggleControls = () => {
-        this.setState({ usingControls: !this.state.usingControls });
-        this.usingControls = !this.usingControls;
-        if (this.usingControls) {
+        this.setState({ isUsingControls: !this.state.isUsingControls });
+        this.isUsingControls = !this.isUsingControls;
+        if (this.isUsingControls) {
             this.playerFleet.changePlacementIndex(44);
         }
         else {
@@ -100,8 +100,6 @@ export default class GameBoard extends React.Component {
         this.playerFleet.moveShipPlacement(direction);
         this.setState({ playerSquares: this.playerFleet.squares.slice() });
     }
-
-
 
     render() {
         let endgameMessage = this.playerFleet.isAlive() ? "You won!" : "Game Over"
@@ -129,12 +127,12 @@ export default class GameBoard extends React.Component {
 
                 {this.playerFleet.isOrganizingFleet() &&
                     <div className="controls-instructions-container">
-                        {!this.state.usingControls && <Instructions />}
+                        {!this.state.isUsingControls && <Instructions />}
                         <button className="toggle-controls-button" onClick={() => this.toggleControls()}>
-                            {this.state.usingControls ? "Turn off controls" : "Turn on controls"}
+                            {this.state.isUsingControls ? "Turn off controls" : "Turn on controls"}
                         </button>
 
-                        {this.state.usingControls &&
+                        {this.state.isUsingControls &&
                             <Controls
                                 move={this.moveShipPlacement}
                                 rotate={this.changeShipOrientaion}

@@ -1,0 +1,15 @@
+.instructions {
+    margin-top: 1vh;
+}
+
+.keybindings {
+    display: grid;
+    grid-column-gap: 1vw;
+    grid-template-columns: repeat(2, auto);
+}
+
+.instructions span {
+    margin-top:1vh;
+    font-size: calc(10px + 1vmin);
+    text-align: left;
+}

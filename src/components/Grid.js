@@ -1,3 +1,5 @@
+import './Grid.css'
+
 export default function Grid(props) {
 
     let rows = [];
