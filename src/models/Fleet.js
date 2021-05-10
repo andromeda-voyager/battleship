@@ -186,7 +186,7 @@ export default class Fleet {
         }
         this.removeTemporaryShip(this.placementIndex);
         this.placementIndex = newLocation;
-        this.placeShip(newLocation, true);
+        this.placeShip(true);
     }
 
     moveVerticalShip(direction) {
@@ -204,7 +204,7 @@ export default class Fleet {
         }
         this.removeTemporaryShip(this.placementIndex);
         this.placementIndex = newLocation;
-        this.placeShip(newLocation, true);
+        this.placeShip(true);
     }
 
     removeTemporaryShip = () => {
