@@ -7,6 +7,15 @@ var connectedHits = [];
 var targetsInIgnoredAreas = [];
 var ignoredTargetsMin = 4; // values from 3 to 5 are ideal
 
+const reset = () => {
+    selectedTargets = [];
+    unattackedLocations = Object.keys(Array.apply(0, Array(100))).map(Number);
+    hitLocations = [];
+    connectedHits = [];
+    targetsInIgnoredAreas = [];
+    ignoredTargetsMin = 4; // values from 3 to 5 are ideal
+}
+
 const attack = (grid) => {
     let target = pickTarget();
     let isHit = grid.attackSquare(target);
@@ -20,7 +29,6 @@ const attack = (grid) => {
     if (selectedTargets.length === 0) {
         connectedHits = [];
     }
-
 }
 
 function pickTarget() {
@@ -192,6 +200,7 @@ function areInSameColumn(locationOne, locationTwo) {
 
 const TargetEngine = {
     attack,
+    reset,
 }
 
 export default TargetEngine;

@@ -19,6 +19,18 @@ export default class GameBoard extends React.Component {
         }
     }
 
+    reset() {
+        this.playerFleet = new Fleet();
+        this.enemyFleet = new Fleet();
+        this.enemyFleet.randomlyPlaceShips();
+        this.setState({
+            isUsingControls: false,
+            enemySquares: this.enemyFleet.squares.slice(),
+            playerSquares: this.playerFleet.squares.slice(),
+        });
+        TargetEngine.reset();
+    }
+
     componentDidMount() {
         document.addEventListener("keydown", this.changeShipOrientaion);
     }
@@ -125,10 +137,16 @@ export default class GameBoard extends React.Component {
                     isOrganizingFleet={this.playerFleet.isOrganizingFleet()}>
                 </Grid>
 
+                {isGameOver &&
+                    <button className="option-button" onClick={() => this.reset()}>
+                       New Game
+                    </button>
+                }
+
                 {this.playerFleet.isOrganizingFleet() &&
                     <div className="controls-instructions-container">
                         {!this.state.isUsingControls && <Instructions />}
-                        <button className="toggle-controls-button" onClick={() => this.toggleControls()}>
+                        <button className="option-button" onClick={() => this.toggleControls()}>
                             {this.state.isUsingControls ? "Turn off controls" : "Turn on controls"}
                         </button>
 
