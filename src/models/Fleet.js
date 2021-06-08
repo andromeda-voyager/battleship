@@ -27,7 +27,7 @@ export default class Fleet {
     toggleOrientation = () => {
         this.removeTemporaryShip(this.placementIndex);
         this.isPlacingHorizontally = !this.isPlacingHorizontally;
-        this.placeShip(this.placementIndex, true);
+        this.placeShip(true);
     }
 
     isAlive = () => {

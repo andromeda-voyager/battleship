@@ -19,7 +19,7 @@ export default class GameBoard extends React.Component {
         }
     }
 
-    reset() {
+    reset = () => {
         this.playerFleet = new Fleet();
         this.enemyFleet = new Fleet();
         this.enemyFleet.randomlyPlaceShips();
@@ -39,7 +39,8 @@ export default class GameBoard extends React.Component {
         document.removeEventListener("keydown", this.changeShipOrientaion);
     }
 
-    changeShipOrientaion = () => {
+    changeShipOrientaion = (e) => {
+        e.preventDefault();
         this.playerFleet.toggleOrientation();
         this.setState({ playerSquares: this.playerFleet.squares.slice() })
     }
@@ -97,15 +98,16 @@ export default class GameBoard extends React.Component {
     }
 
     toggleControls = () => {
-        this.setState({ isUsingControls: !this.state.isUsingControls });
-        this.isUsingControls = !this.isUsingControls;
-        if (this.isUsingControls) {
+        if (!this.state.isUsingControls) {
             this.playerFleet.changePlacementIndex(44);
         }
         else {
             this.playerFleet.removeTemporaryShip();
         }
-        this.setState({ playerSquares: this.playerFleet.squares.slice() });
+        this.setState({ 
+            playerSquares: this.playerFleet.squares.slice(),
+            isUsingControls: !this.state.isUsingControls 
+        });
     }
 
     moveShipPlacement = (direction) => {
@@ -138,7 +140,7 @@ export default class GameBoard extends React.Component {
                 </Grid>
 
                 {isGameOver &&
-                    <button className="option-button" onClick={() => this.reset()}>
+                    <button className="option-button" onClick={this.reset}>
                        New Game
                     </button>
                 }
@@ -146,7 +148,7 @@ export default class GameBoard extends React.Component {
                 {this.playerFleet.isOrganizingFleet() &&
                     <div className="controls-instructions-container">
                         {!this.state.isUsingControls && <Instructions />}
-                        <button className="option-button" onClick={() => this.toggleControls()}>
+                        <button className="option-button" onClick={this.toggleControls}>
                             {this.state.isUsingControls ? "Turn off controls" : "Turn on controls"}
                         </button>
 
@@ -162,5 +164,4 @@ export default class GameBoard extends React.Component {
             </div>
         )
     }
-
 }
