@@ -32,17 +32,29 @@ export default class GameBoard extends React.Component {
     }
 
     componentDidMount() {
-        document.addEventListener("keydown", this.changeShipOrientaion);
+        document.addEventListener("keydown",  this.changeShipOrientaion);
+        document.addEventListener("keyup",  this.keyupHandler);
+
     }
+
+    keyupHandler(e) {
+        if(e.keyCode === 32) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+    }
+
 
     componentWillUnmount() {
         document.removeEventListener("keydown", this.changeShipOrientaion);
+        document.removeEventListener("keyup", this.keyupHandler);
     }
 
     changeShipOrientaion = (e) => {
-        e.preventDefault();
-        this.playerFleet.toggleOrientation();
-        this.setState({ playerSquares: this.playerFleet.squares.slice() })
+        if (e.keyCode === 32 || e.type === "click") {
+            this.playerFleet.toggleOrientation();
+            this.setState({ playerSquares: this.playerFleet.squares.slice() })
+        }
     }
 
     placeShip = () => {
@@ -74,6 +86,7 @@ export default class GameBoard extends React.Component {
 
     handleOceanMouseOver = (index) => {
         if (this.playerFleet.isOrganizingFleet() && !this.state.isUsingControls) {
+            this.playerFleet.removeTemporaryShip();
             this.playerFleet.changePlacementIndex(index);
             this.setState({ playerSquares: this.playerFleet.squares.slice() });
         }
@@ -85,28 +98,22 @@ export default class GameBoard extends React.Component {
         if (shipPlaced) this.setState({ playerSquares: this.playerFleet.squares.slice() });
     }
 
-    handleOceanMouseOut = (index) => {
-        if (this.playerFleet.isOrganizingFleet() && !this.state.isUsingControls) {
-            this.playerFleet.removeTemporaryShip();
-            this.setState({ playerSquares: this.playerFleet.squares.slice() });
-        }
-    }
-
     removeShipAt(index) {
         let shipRemoved = this.playerFleet.removeTemporaryShip(index);
         if (shipRemoved) this.setState({ playerSquares: this.playerFleet.squares.slice() });
     }
 
     toggleControls = () => {
+        this.playerFleet.removeTemporaryShip();
         if (!this.state.isUsingControls) {
             this.playerFleet.changePlacementIndex(44);
         }
         else {
             this.playerFleet.removeTemporaryShip();
         }
-        this.setState({ 
+        this.setState({
             playerSquares: this.playerFleet.squares.slice(),
-            isUsingControls: !this.state.isUsingControls 
+            isUsingControls: !this.state.isUsingControls
         });
     }
 
@@ -133,7 +140,6 @@ export default class GameBoard extends React.Component {
                 <Grid
                     onClick={this.placeShip}
                     onMouseOver={this.handleOceanMouseOver}
-                    onMouseOut={this.handleOceanMouseOut}
                     squares={this.state.playerSquares}
                     isPlayersGrid={true}
                     isOrganizingFleet={this.playerFleet.isOrganizingFleet()}>
@@ -141,7 +147,7 @@ export default class GameBoard extends React.Component {
 
                 {isGameOver &&
                     <button className="option-button" onClick={this.reset}>
-                       New Game
+                        New Game
                     </button>
                 }
 

@@ -18,7 +18,6 @@ export default function Grid(props) {
             key={i}
             onClick={() => props.onClick(i)}
             onMouseOver={props.isPlayersGrid ? () => props.onMouseOver(i): undefined}
-            onMouseOut={props.isPlayersGrid ? () => props.onMouseOut(i): undefined}
             >
             <img
                 className={props.squares[i].isHorizontal ? undefined : 'vertical'}
