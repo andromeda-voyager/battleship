@@ -1,12 +1,13 @@
 
 .arrow {
-    width:4vh;
-    height:4vh;
+    width:5vh;
+    height:5vh;
     min-width:15px;
     min-height:15px;
     background-color: transparent;
     border: solid rgb(231, 231, 231);
-    border-width: 0 1vh 1vh 0;
+    border-width: 0 1.2vh 1.2vh 0;
+    margin: 1vh;
     display: block;
 }
 
@@ -50,12 +51,12 @@
 
 .rotate-button {
     padding: 1vh;
-    width:6vh;
-    height:6vh;
+    width:7vh;
+    height:7vh;
     min-width: 20px;
     min-height: 20px;
     border-color: transparent;
-    border-radius: 35px;
+    border-radius: 50px;
     display: flex;
     justify-content: center;
     align-items: center;
