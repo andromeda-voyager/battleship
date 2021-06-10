@@ -3,8 +3,8 @@
     border-left: 1px solid rgba(0, 0, 0, 0.596);
     height: 35vh;
     width: 35vh;
-    min-width: 275px;
-    min-height:275px;
+    min-width: 150px;
+    min-height:150px;
     display: grid;
     grid-template-columns: repeat(10, 10%);
     grid-template-rows: repeat(10, 10%);

@@ -11,18 +11,13 @@
     visibility: hidden;
 }
 
-.board span {
-    margin-top:1vh;
-    font-size: calc(10px + 1vmin);
-    text-align: left;
-}
-
 .board {
     display:flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     color:white;
+    padding-bottom:20px;
 }
 
 .sonar-container {
@@ -33,11 +28,12 @@
 
 .option-button {
     border-radius: 5px;
-    padding:15px;
+    padding:1.1em;
     background-color: rgb(24, 73, 180);
     border: none;
     color:white;
     margin-top:15px;
+    font-size: calc(7px + 1vh);
 }
 
 .toggle-controls:hover {

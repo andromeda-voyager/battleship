@@ -1,12 +1,13 @@
 
 .arrow {
-    width:45px;
-    height:45px;
+    width:4vh;
+    height:4vh;
+    min-width:15px;
+    min-height:15px;
     background-color: transparent;
     border: solid rgb(231, 231, 231);
-    border-width: 0 10px 10px 0;
+    border-width: 0 1vh 1vh 0;
     display: block;
-    margin: 7px;
 }
 
 .controls-container {
@@ -48,17 +49,25 @@
 } 
 
 .rotate-button {
-    padding: 15px;
+    padding: 1vh;
+    width:6vh;
+    height:6vh;
+    min-width: 20px;
+    min-height: 20px;
     border-color: transparent;
-    border-radius: 50px;
+    border-radius: 35px;
     display: flex;
     justify-content: center;
     align-items: center;
+    z-index: 5;
 }
 
 .place-ship-button {
-    padding:10px;
-    margin-bottom:15px;
+    border-radius: 3px;
+    border: 0px;
+    padding:.8em;
+    margin-bottom:1.3em;
+    font-size: calc(7px + 1vh);
 }
 
 button {

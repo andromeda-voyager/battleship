@@ -10,6 +10,6 @@
 
 .instructions span {
     margin-top:1vh;
-    font-size: calc(10px + 1vmin);
+    font-size: calc(5px + 1.5vh);
     text-align: left;
 }
